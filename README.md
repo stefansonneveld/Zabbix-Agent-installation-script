@@ -1,0 +1,1 @@
+# Zabbix Agent installation script
