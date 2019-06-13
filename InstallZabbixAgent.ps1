@@ -27,7 +27,7 @@ else
  }
 }
 
-#check if there is a new Zabbix Agent to install
+#check if there is a new Zabbix Agent to install 64-bit check
 elseif ("$DesiredVersion" -gt [System.Diagnostics.FileVersionInfo]::GetVersionInfo("$zabbixInstallPath\bin\win64\zabbix_agentd.exe").FileVersion)
 {
     Write-Host "New Version Found Starting Update"
@@ -43,6 +43,24 @@ elseif ("$DesiredVersion" -gt [System.Diagnostics.FileVersionInfo]::GetVersionIn
     Start-Process -FilePath "$zabbixInstallPath\bin\win64\zabbix_agentd.exe" -ArgumentList "-c $zabbixInstallPath\conf\zabbix_agentd.win.conf -i" -NoNewWindow
     Start-Sleep -Seconds 2
     Start-Process -FilePath "$zabbixInstallPath\bin\win64\zabbix_agentd.exe" -ArgumentList "-c $zabbixInstallPath\conf\zabbix_agentd.win.conf -s" -NoNewWindow
+}
+
+#check if there is a new Zabbix Agent to install 32-bit check
+elseif ("$DesiredVersion" -gt [System.Diagnostics.FileVersionInfo]::GetVersionInfo("$zabbixInstallPath\bin\win32\zabbix_agentd.exe").FileVersion)
+{
+    Write-Host "New Version Found Starting Update"
+
+    #Stop and Remove Zabbix agent Service
+    Start-Process -FilePath "$zabbixInstallPath\bin\win32\zabbix_agentd.exe" -ArgumentList "-c $zabbixInstallPath\conf\zabbix_agentd.win.conf -x" -NoNewWindow
+    Start-Sleep -Seconds 2
+    Start-Process -FilePath "$zabbixInstallPath\bin\win32\zabbix_agentd.exe" -ArgumentList "-c $zabbixInstallPath\conf\zabbix_agentd.win.conf -d" -NoNewWindow
+    Start-Sleep -Seconds 2
+
+    Copy-Item $zabbixUncPath $zabbixInstallPath -Recurse -Force
+
+    Start-Process -FilePath "$zabbixInstallPath\bin\win32\zabbix_agentd.exe" -ArgumentList "-c $zabbixInstallPath\conf\zabbix_agentd.win.conf -i" -NoNewWindow
+    Start-Sleep -Seconds 2
+    Start-Process -FilePath "$zabbixInstallPath\bin\win32\zabbix_agentd.exe" -ArgumentList "-c $zabbixInstallPath\conf\zabbix_agentd.win.conf -s" -NoNewWindow
 }
 
 else
